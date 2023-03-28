@@ -1,10 +1,13 @@
 
 import './App.css';
 import Table from "./Components/table"
+import FormAdd from './Components/formAdd';
 
 function App() {
   return (
-    <Table></Table>
+    <>
+      <FormAdd />
+    </>
   );
 }
 
