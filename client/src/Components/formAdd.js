@@ -23,6 +23,35 @@ export default class FormAdd extends React.Component {
             )
     }
 
+
+    deleteDataInChild = async (e) => {
+        const data = {};
+        const time = e.target.getAttribute('data-id');
+        data.id = time;
+        console.log(data);
+        await fetch("http://localhost:5000/delete", {
+            method: 'delete',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+        await fetch("http://localhost:5000/", {
+            method: 'get',
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        labs: result
+                    })
+                    this.setState({
+                        labs: result
+                    })
+                }
+            )
+    }
+
+
+
     async addLabToDb() {
         let subject = document.getElementById("inp1").value;
         let number = document.getElementById("inp2").value;
@@ -40,7 +69,6 @@ export default class FormAdd extends React.Component {
         await fetch("http://localhost:5000/", {
             method: 'get',
         })
-            //.then(res=> console.log(res.json()))
             .then(res => res.json())
             .then(
                 (result) => {
@@ -55,7 +83,7 @@ export default class FormAdd extends React.Component {
         const lab = this.state.labs;
         return (
             <>
-                <Table labs={lab} />
+                <Table labs={lab} deleteDataInChild={this.deleteDataInChild} />
                 <h3>Add one more lab</h3>
                 <div className="form-group">
                     <p>Subject</p>

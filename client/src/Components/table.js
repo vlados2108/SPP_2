@@ -36,7 +36,7 @@ export default class table extends React.Component {
                                 <td id="deadlineDb">{lab.deadline}</td>
                                 <td class="attach" id="attachDb">{lab.attach}</td>
                                 <td>
-                                    <button type="button" id="buttonDb" data-id={lab.time} onClick={() => { }}>Delete</button>
+                                    <button type="button" id="buttonDb" data-id={lab.time} onClick={(e) => this.props.deleteDataInChild(e)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
