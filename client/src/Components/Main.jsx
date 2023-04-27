@@ -1,54 +1,64 @@
 import React, { useEffect, useState } from "react";
+import { GET_LABS } from "../query/query";
+import { CREATE_LAB } from "../query/addMutation";
+import { DELETE_LAB } from "../query/deleteMutation";
+import { useMutation, useQuery } from "@apollo/client";
+
 
 export default function Main({ authorize }) {
   const fileInput = React.createRef();
+  const {loading, error, data,refetch} = useQuery(GET_LABS);
+  const [newLab] = useMutation(CREATE_LAB)
+  const [deleteLab] = useMutation(DELETE_LAB)
   const [labs, setLabs] = useState([]);
   const [subject, setSubject] = useState("");
   const [task, setTask] = useState(0);
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [attach, setAttach] = useState("");
+  
   useEffect(() => {
-    fetch("http://localhost:5000/", {
-      method: "get",
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setLabs(res);
-      })
-    console.log(labs);
-  });
+    if (error) {
+      console.log("huita");
+    }
+    if (!loading) {
+      setLabs(data.getLabs);
+    }
+  }, [data]);
+
+  if (loading) 
+    return (<>Loading...</>);
 
   const addLabToDb = async () => {
     let attach = fileInput.current.files[0].name;
-    let data = {
-      subject: subject,
-      number: task,
-      status: status,
-      deadline: deadline,
-      attach: attach,
-    };
-    //console.log(data);
-    await fetch("http://localhost:5000/add", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
+    const date = new Date().toLocaleDateString();
+    const time = new Date().toLocaleTimeString();
+    const dateTime = date + time;
+    newLab({
+      variables:{
+        input:{
+          subject,
+          number: parseInt(task),
+          status,
+          deadline,
+          attach,
+          time:dateTime
+        }
+      }
+    })
+    .then(result => {
+      console.log(result.data.createLab);
+    })
+    refetch()
   };
 
   const deleteRow = async (e) => {
-    const data = {};
     const time = e.target.getAttribute("data-id");
-    data.id = time;
-    console.log(data);
-    await fetch("http://localhost:5000/delete", {
-      method: "delete",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
+    deleteLab({
+      variables:{
+        time
+      }
+    })
+    refetch()
   };
 
   const exit = () => {
