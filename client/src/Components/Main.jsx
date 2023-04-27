@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function Main({authorize}) {
+export default function Main({ authorize }) {
   const fileInput = React.createRef();
   const [labs, setLabs] = useState([]);
   const [subject, setSubject] = useState("");
@@ -11,11 +11,13 @@ export default function Main({authorize}) {
   useEffect(() => {
     fetch("http://localhost:5000/", {
       method: "get",
+      credentials: "include",
     })
       .then((res) => res.json())
-      .then((result) => {
-        setLabs(result);
-      });
+      .then((res) => {
+        setLabs(res);
+      })
+    console.log(labs);
   });
 
   const addLabToDb = async () => {
@@ -31,6 +33,7 @@ export default function Main({authorize}) {
     await fetch("http://localhost:5000/add", {
       method: "post",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(data),
     });
   };
@@ -43,13 +46,14 @@ export default function Main({authorize}) {
     await fetch("http://localhost:5000/delete", {
       method: "delete",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(data),
     });
   };
 
-  const exit = ()=>{
+  const exit = () => {
     authorize(false);
-  }
+  };
 
   return (
     <>
@@ -169,7 +173,6 @@ export default function Main({authorize}) {
       <div className="form-group">
         <p>Attach file</p>
         <input
-        
           type="file"
           id="inp5"
           className="form-control-file"

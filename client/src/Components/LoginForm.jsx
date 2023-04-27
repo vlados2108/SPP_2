@@ -1,27 +1,23 @@
 import { useState } from "react";
 
-export function LoginForm({authorize}) {
+export function LoginForm({ authorize }) {
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
 
-
   const login = async () => {
     const data = { username: username, password: pass };
-    await fetch("http://localhost:5000/auth/login",
-      {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      }
-    ).then(res=>res.json).then(res=>{
-      if (res.status = 200)
-        authorize(true)
-      else
-        authorize(false)
+    await fetch("http://localhost:5000/auth/login", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(data),
     })
+      .then((res) => res.json)
+      .then((res) => {
+        if ((res.status = 200)) authorize(true);
+        else authorize(false);
+      });
   };
-
 
   return (
     <>

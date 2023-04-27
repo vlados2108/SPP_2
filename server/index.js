@@ -5,10 +5,12 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 var path = require("path");
 const cors = require("cors");
+const authController = require('./middleware/authMiddleware')
 
 const multer = require("multer");
 const Logger = require("nodemon/lib/utils/log");
 const { cookie } = require("express-validator");
+const authMiddleware = require("./middleware/authMiddleware");
 const storageConfig = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "attaches");
@@ -27,12 +29,12 @@ app.use(cors({
  }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use("/auth", authRouter);
 app.use(multer({ storage: storageConfig }).single("filedata"));
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const collection = db.collection("LabsCollection");
 
-app.get("/", async (request, responce) => {
+
+app.get("/",authMiddleware, async (request, responce) => {
   try {
     //await collection.deleteMany({});
     const labs = await collection.find({}).toArray();
@@ -44,7 +46,7 @@ app.get("/", async (request, responce) => {
   }
 });
 
-app.post("/add", urlencodedParser, async (request, responce) => {
+app.post("/add",authMiddleware, urlencodedParser, async (request, responce) => {
   console.log(request.body);
   const subject = request.body.subject;
   const number = request.body.number;
@@ -74,7 +76,7 @@ app.post("/add", urlencodedParser, async (request, responce) => {
   }
 });
 
-app.delete("/delete", async (request, responce) => {
+app.delete("/delete",authMiddleware, async (request, responce) => {
   if (!request.body) {
     responce.status(404).send("Incorrect data");
   }
@@ -89,6 +91,8 @@ app.delete("/delete", async (request, responce) => {
     responce.sendStatus(500);
   }
 });
+
+app.use("/auth", authRouter);
 
 (async () => {
   try {
